@@ -1,0 +1,27 @@
+[project]
+name = "insight"
+version = "0.1.0.dev0"
+description = "InsightPkg is a lightweight Python tool that fetches and aggregates real-time metadata and statistics for open-source Python packages from both PyPI and GitHub."
+authors = [{name = "Parth Rathod"}]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = [ "pypi", "github", "analytics", "reddit" ]
+classifiers = ["Topic :: Software Development :: Build Tools"]
+
+[project.urls]
+repository = "https://github.com/ParthDevWorks/insightpkg"
+
+[tool.poetry]
+packages = [{include = "insight"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+requests = "^2.32.4"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
