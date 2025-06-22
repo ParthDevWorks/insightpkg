@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss>
+    <channel>
+        <item>
+            <title>Package1 1.0</title>
+            <description>Descriptioon 1</description>
+            <pubDate>Sat, 21 Jun 2025 15:03:55 GMT</pubDate>
+        </item>
+        <item>
+            <title>Package2 2.0</title>
+            <description>Descriptioon 2</description>
+            <pubDate>Sat, 21 Jun 2025 10:03:55 GMT</pubDate>
+        </item>
+    </channel>
+</rss>
