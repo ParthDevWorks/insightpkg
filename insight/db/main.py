@@ -30,20 +30,30 @@ class DatabaseEntries:
     """
 
     def __init__(self, data: list[RecentPackages]):
+        self.ensure_database_is_ready()
+
         config = load_config()
         self.conn = get_connection(config)
-        self.ensure_database_is_ready()
+
+        self.ensure_tables_are_present()
+
         self.data = data
 
     def ensure_database_is_ready(self):
         """
-        Ensure the database is created and tables are set up.
+        Ensure the database is created.
 
         This method calls functions to create the database if it doesn't exist,
-        and creates the required tables in the database.
         """
 
         create_database()
+
+    def ensure_tables_are_present(self):
+        """
+        Ensure the tables are set up.
+
+        This method calls functions to create the required tables in the database.
+        """
         create_required_tables(self.conn)
 
     def insert_data(self):
