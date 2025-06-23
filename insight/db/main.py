@@ -69,14 +69,3 @@ class DatabaseEntries:
         """
 
         self.conn.close()
-
-
-# For Testing Purpose
-if __name__ == "__main__":
-    from insight.pypi.utils import get_pypi_packages_uploaded_today
-
-    data = get_pypi_packages_uploaded_today()
-
-    db = DatabaseEntries(data=data)
-    db.insert_data()
-    db.shutdown()
