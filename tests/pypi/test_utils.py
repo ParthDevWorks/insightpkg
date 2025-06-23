@@ -1,4 +1,5 @@
 from insight.pypi.utils import get_pypi_packages_uploaded_today
+from insight.pypi.datatypes import RecentPackages
 
 
 def test_get_pypi_packages_uploaded_today(monkeypatch, data_root, mock_response):
@@ -23,10 +24,25 @@ def test_get_pypi_packages_uploaded_today(monkeypatch, data_root, mock_response)
         mock_github_link,
     )
 
-    result = get_pypi_packages_uploaded_today()
+    actual_result = get_pypi_packages_uploaded_today()
 
-    assert len(result) == 2
-    assert result[0].package_name == "Package1"
-    assert result[0].package_version == "1.0"
-    assert result[1].package_name == "Package2"
-    assert result[1].package_version == "2.0"
+    expected_result = [
+        RecentPackages(
+            package_name="Package1",
+            package_version="1.0",
+            package_upload_date="2025-06-21",
+            package_upload_time="15:03:55+0000",
+            package_description="Descriptioon 1",
+            package_github_link=None,
+        ),
+        RecentPackages(
+            package_name="Package2",
+            package_version="2.0",
+            package_upload_date="2025-06-21",
+            package_upload_time="10:03:55+0000",
+            package_description="Descriptioon 2",
+            package_github_link=None,
+        ),
+    ]
+
+    assert actual_result == expected_result

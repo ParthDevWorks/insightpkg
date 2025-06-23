@@ -5,6 +5,7 @@ from dataclasses import dataclass
 class RecentPackages:
     package_name: str
     package_version: str
-    package_date: str
+    package_upload_date: str
+    package_upload_time: str
     package_github_link: str | None
     package_description: str
