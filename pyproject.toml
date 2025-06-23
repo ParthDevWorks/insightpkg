@@ -18,6 +18,7 @@ packages = [{include = "insight"}]
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
 requests = "^2.32.4"
+psycopg2-binary = "^2.9.10"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.1"
