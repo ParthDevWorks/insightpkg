@@ -1,6 +1,7 @@
 import os
 from configparser import ConfigParser
 from pathlib import Path
+import logging
 
 from psycopg2 import connect, sql
 from psycopg2.extensions import connection
@@ -13,6 +14,8 @@ DATABASE_INI_SECTION = "postgresql"
 DEFAULT_DATABASE = "insightpkg"
 MAINTENANCE_DB_NAME = "postgres"
 DB_DIR = Path(__file__).parent.resolve()
+
+logger = logging.getLogger(__name__)
 
 
 def load_config() -> dict:
@@ -69,7 +72,7 @@ def get_connection(config: dict) -> connection:
         host=config["host"],
         port=config["port"],
     )
-
+    logger.debug(f"Connection established to Database {config["database"]!r}")
     return conn
 
 
@@ -105,9 +108,9 @@ def create_database() -> None:
         default_cursor.execute(
             sql.SQL("CREATE DATABASE {}").format(sql.Identifier(DEFAULT_DATABASE))
         )
-        print("Database created.")
+        logger.debug(f"Database {DEFAULT_DATABASE!r} created.")
     else:
-        print("Database already exists.")
+        logger.debug(f"Database {DEFAULT_DATABASE!r} already exists.")
 
 
 def create_required_tables(conn: connection) -> None:
@@ -130,10 +133,10 @@ def create_required_tables(conn: connection) -> None:
         cur = conn.cursor()
         cur.execute(sql_script)
         conn.commit()
-        print("SQL Tables executed successfully.")
+        logger.debug("SQL Tables executed successfully.")
 
     except FileNotFoundError:
-        print(f"Schema File not found at location: {schema_file_path}")
+        logger.critical(f"Schema File not found at location: {schema_file_path!r}")
 
 
 def insert_into_pypi_packages_table(
@@ -152,7 +155,7 @@ def insert_into_pypi_packages_table(
 
     """
     if not data:
-        print("No Data to Insert in table")
+        logger.info("No Data to Insert in table")
         return
 
     values = [
@@ -183,4 +186,4 @@ def insert_into_pypi_packages_table(
         execute_values(cur, query, values)
     conn.commit()
 
-    print("Data has been inserted.")
+    logger.debug("Data has been inserted into 'pypi_packages' table.")

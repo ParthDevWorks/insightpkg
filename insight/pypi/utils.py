@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
+import logging
 
 import requests
 
@@ -7,6 +8,8 @@ from insight.pypi.datatypes import RecentPackages
 
 
 RSS_FEED_URL = "https://pypi.org/rss/updates.xml"
+
+logger = logging.getLogger(__name__)
 
 
 def get_request(url: str) -> requests.Response | None:
@@ -25,8 +28,12 @@ def get_request(url: str) -> requests.Response | None:
 
     response = requests.get(url)
     if response.status_code == 200:
+        logger.debug(f"GET request to {url!r} completed successfully.")
         return response
     else:
+        logger.critical(
+            f"GET request to {url!r} failed with response code:{response.status_code!r}."
+        )
         raise Exception(
             f"Failed to fetch XML Content. Status Code is {response.status_code}"
         )
