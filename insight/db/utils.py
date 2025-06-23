@@ -157,7 +157,8 @@ def insert_into_pypi_packages_table(
         (
             p.package_name,
             p.package_version,
-            p.package_date,
+            p.package_upload_date,
+            p.package_upload_time,
             p.package_github_link,
             p.package_description,
         )
@@ -168,7 +169,8 @@ def insert_into_pypi_packages_table(
         INSERT INTO pypi_packages (
             package_name,
             package_version,
-            package_date,
+            package_upload_date,
+            package_upload_time,
             package_github_link,
             package_description
         ) VALUES %s
