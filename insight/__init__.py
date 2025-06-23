@@ -2,15 +2,15 @@ import os
 import logging
 from pathlib import Path
 from importlib.metadata import version
-from datetime import datetime
 
 from insight.log.handler import MonthlyRotatingFileHandler
 
 LOG_DIR = os.getenv("LOG_DIR", Path(__file__).parent.parent.resolve())
-PACKAGE_VERSION = version("insight")
+PACKAGE_NAME = "insight"
+PACKAGE_VERSION = version(PACKAGE_NAME)
 
 
-logger = logging.getLogger("insight")
+logger = logging.getLogger(PACKAGE_NAME)
 logger.setLevel(logging.DEBUG)
 
 
@@ -22,6 +22,11 @@ formatter = logging.Formatter(
 monthly_handler.setFormatter(formatter)
 logger.addHandler(monthly_handler)
 
-logger.info("=" * 60)
-logger.info(f"🚀 Run started at {datetime.now():%Y-%m-%d %H:%M:%S}")
-logger.info("=" * 60)
+
+def disable_logs():
+    logger.disabled = True
+    logger.propagate = False
+    for name in list(logging.root.manager.loggerDict):
+        if name.startswith(PACKAGE_NAME):
+            logging.getLogger(name).disabled = True
+            logging.getLogger(name).propagate = False

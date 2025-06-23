@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 
+from insight import disable_logs
 from insight.fetch_and_store_pypi import execute
 
 
@@ -15,7 +16,14 @@ def main():
         help="Scrapes the PyPI website and extracts the packages which were uploaded today and then enters into DB. Make sure PostgreSQL DB Server is Running.",
     )
 
+    parser.add_argument(
+        "--disable-logs", action="store_true", help="Disable Logging to File"
+    )
+
     args = parser.parse_args()
+
+    if args.disable_logs:
+        disable_logs()
 
     if args.store:
         execute()
