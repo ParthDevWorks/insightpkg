@@ -1,3 +1,5 @@
+import logging
+
 from insight.db.utils import (
     load_config,
     create_database,
@@ -7,6 +9,8 @@ from insight.db.utils import (
 )
 
 from insight.pypi.datatypes import RecentPackages
+
+logger = logging.getLogger(__name__)
 
 
 class DatabaseEntries:
