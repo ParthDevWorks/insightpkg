@@ -11,6 +11,7 @@ from insight.pypi.datatypes import RecentPackages
 DATABASE_INI_FILE_PATH = os.getenv("DATABASE_INI_FILE_PATH")
 DATABASE_INI_SECTION = "postgresql"
 DEFAULT_DATABASE = "insightpkg"
+MAINTENANCE_DB_NAME = "postgres"
 DB_DIR = Path(__file__).parent.resolve()
 
 
@@ -73,9 +74,9 @@ def get_connection(config: dict) -> connection:
 
 
 # Since PostgreSQL doesn’t support CREATE DATABASE IF NOT EXISTS, We create a default connection to database which is 'postgres'
-def _postgres_connection() -> connection:
+def check_maintenance_database() -> connection:
     config = load_config()
-    config["database"] = "postgres"
+    config["database"] = MAINTENANCE_DB_NAME
 
     conn = get_connection(config)
     return conn
@@ -91,7 +92,8 @@ def create_database() -> None:
     """
 
     # Connect to the default 'postgres' database
-    default_connection = _postgres_connection()
+    default_connection = check_maintenance_database()
+    default_connection.autocommit = True
     default_cursor = default_connection.cursor()
 
     default_cursor.execute(
