@@ -5,11 +5,9 @@ from psycopg2.extensions import connection
 from insight.db.utils import (
     create_database,
     create_required_tables,
-    insert_into_pypi_packages_table,
 )
 
 from insight.config import Config
-from insight.pypi.datatypes import RecentPackages
 
 logger = logging.getLogger(__name__)
 

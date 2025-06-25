@@ -7,3 +7,15 @@ CREATE TABLE if not exists pypi_packages (
     package_description TEXT,
     PRIMARY KEY (package_name, package_version)
 );
+
+CREATE TABLE if not exists github_info (
+    github_link TEXT NOT NULL,
+    stars TEXT NOT NULL,
+    watchers TEXT NOT NULL,
+    forks TEXT NOT NULL,
+    open_issues TEXT NOT NULL,
+    created_date DATE NOT NULL,
+    last_updated_date DATE NOT NULL,
+    license TEXT,
+    PRIMARY KEY (github_link)
+);
