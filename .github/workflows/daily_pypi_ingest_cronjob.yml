@@ -39,7 +39,9 @@ jobs:
           EOF
 
       - name: Run the Ingestion of PyPI to Supabase
+        id: ingest_pypi
         run: poetry run pypi_ingest --store --mode prod
+        continue-on-error: true
       
       - name: Get date
         id: date
@@ -49,3 +51,7 @@ jobs:
         with:
           name: ${{ steps.date.outputs.name }}
           path: ${{ env.LOG_DIR }}
+      
+      - name: Check If Ingestion Failed
+        if: steps.ingest_pypi.outcome == 'failure'
+        run: exit 1

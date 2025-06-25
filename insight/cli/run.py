@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
+import sys
 
-from insight.fetch_and_store_pypi import execute
+from insight.main import ingest_pypi
 
 
 def main():
@@ -28,7 +29,9 @@ def main():
     mode = args.mode
 
     if args.store:
-        execute(mode=mode)
+        status = ingest_pypi(mode=mode)
+        if not status:
+            sys.exit(1)
 
 
 if __name__ == "__main__":
