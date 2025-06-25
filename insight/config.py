@@ -3,6 +3,7 @@ from configparser import ConfigParser
 from typing import Literal
 from pathlib import Path
 from importlib.metadata import version
+import logging
 
 from pydantic import BaseModel
 
@@ -10,6 +11,8 @@ PACKAGE_NAME = "insight"
 PACKAGE_VERSION = version(PACKAGE_NAME)
 CONFIG_INI_FILE_PATH = os.getenv("CONFIG_INI_FILE_PATH")
 LOG_DIR = Path(os.getenv("LOG_DIR", Path(__file__).parent.parent.resolve()))
+
+logger = logging.getLogger(__name__)
 
 
 class Config(BaseModel):
@@ -36,6 +39,7 @@ def load_config(section: Literal["dev", "prod"]) -> Config:
     Raises:
         ValueError: If the environment variable 'CONFIG_INI_FILE_PATH' is not set.
         ValueError: If the specified section is not found in the ini file.
+        ValueError: If the specified config is not in correct Config Format.
     """
 
     if not CONFIG_INI_FILE_PATH:
@@ -55,4 +59,9 @@ def load_config(section: Literal["dev", "prod"]) -> Config:
         )
 
     config["mode"] = section
-    return Config(**config)
+    try:
+        config = Config(**config)
+    except Exception:
+        raise
+
+    return config

@@ -1,0 +1,40 @@
+name: Test CI
+description: |
+  This workflow runs tests on the codebase when a pull request is made to the dev branch.
+  It uses Python and Poetry for dependency management and testing.
+
+on:
+    pull_request:
+        branches:
+            - dev
+
+    workflow_dispatch:      # Allows manual triggering
+
+
+env:
+  POETRY_VERSION: ${{ vars.POETRY_VERSION}}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+        matrix:
+          python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Python and Poetry
+        uses: ParthDevWorks/development-actions/actions/install-python-poetry@main
+        with:
+            python-version: ${{ matrix.python-version }}
+            poetry-version: ${{ env.POETRY_VERSION }}
+
+      - name: Install project
+        run: poetry install --no-interaction --with dev
+
+      - name: Run tests
+        id: run-tests
+        run: poetry run pytest

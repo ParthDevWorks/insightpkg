@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-LOG_FILE_NAME = f"{datetime.now().strftime("%d_%B_%Y")}.log"
+LOG_FILE_NAME = f'{datetime.now().strftime("%d_%B_%Y")}.log'
 
 
 class MonthlyRotatingFileHandler(logging.Handler):
