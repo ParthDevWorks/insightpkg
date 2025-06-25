@@ -10,10 +10,10 @@ CREATE TABLE if not exists pypi_packages (
 
 CREATE TABLE if not exists github_info (
     github_link TEXT NOT NULL,
-    stars TEXT NOT NULL,
-    watchers TEXT NOT NULL,
-    forks TEXT NOT NULL,
-    open_issues TEXT NOT NULL,
+    stars INT NOT NULL,
+    watchers INT NOT NULL,
+    forks INT NOT NULL,
+    open_issues INT NOT NULL,
     created_date DATE NOT NULL,
     last_updated_date DATE NOT NULL,
     license TEXT,

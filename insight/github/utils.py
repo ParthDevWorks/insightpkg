@@ -38,10 +38,10 @@ def get_repo_info(repo_url: str) -> GithubInfo:
 
     return GithubInfo(
         github_link=repo_url,
-        stars=data.get("stargazers_count", "0"),
-        watchers=data.get("subscribers_count", "0"),
-        forks=data.get("forks_count", "0"),
-        open_issues=data.get("open_issues_count", "0"),
+        stars=int(data.get("stargazers_count", 0)),
+        watchers=int(data.get("subscribers_count", 0)),
+        forks=int(data.get("forks_count", 0)),
+        open_issues=int(data.get("open_issues_count", 0)),
         created_date=created_date,
         last_updated_date=last_updated_date,
         license=data.get("license").get("name", None) if data.get("license") else None,

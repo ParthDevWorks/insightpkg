@@ -4,10 +4,10 @@ from dataclasses import dataclass
 @dataclass
 class GithubInfo:
     github_link: str
-    stars: str
-    watchers: str
-    forks: str
-    open_issues: str
+    stars: int
+    watchers: int
+    forks: int
+    open_issues: int
     created_date: str
     last_updated_date: str
     license: str | None
