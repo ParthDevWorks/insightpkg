@@ -1,4 +1,4 @@
-name: Daily Ingest PyPI Data to Supabase at 5:50 PM CST
+name: Daily Ingest PyPI Data to Supabase
 
 on:
   schedule:
@@ -8,6 +8,7 @@ on:
 env:
     PYTHON_VERSION: ${{ vars.PYTHON_VERSION }}
     POETRY_VERSION: ${{ vars.POETRY_VERSION }}
+    CONFIG_INI_FILE_PATH: ${{ github.workspace }}/config.ini
 
 jobs:
   run-daily-task:
@@ -24,6 +25,17 @@ jobs:
 
       - name: Install project
         run: poetry install --no-interaction
-    
+      
+      - name: Create config.ini File
+        run: |
+          cat <<EOF > "$CONFIG"
+          [prod]
+          db_host=${{ secrets.SUPABASE_DB_HOST }}
+          db_database_name=${{ secrets.SUPABASE_DB_NAME }}
+          db_port=${{ secrets.SUPABASE_DB_PORT }}
+          db_user=${{ secrets.SUPABASE_DB_USER }}
+          db_password=${{ secrets.SUPABASE_DB_PASSWORD }}
+          EOF
+
       - name: Run the Ingestion of PyPI to Supabase
         run: poetry run pypi_ingest --store --mode prod
