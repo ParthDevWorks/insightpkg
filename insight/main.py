@@ -5,10 +5,12 @@ from typing import Literal
 from insight.config import load_config, PACKAGE_VERSION
 from insight.pypi.utils import get_pypi_packages_uploaded_today
 from insight.db.main import DatabaseEntries
+from insight.decorator.main import timing_decorator
 
 logger = logging.getLogger(__name__)
 
 
+@timing_decorator
 def ingest_pypi(mode: Literal["dev", "prod"]) -> bool:
     try:
         pypi_ingest_status = False
