@@ -1,5 +1,3 @@
-import os
-from configparser import ConfigParser
 from pathlib import Path
 import logging
 
@@ -8,9 +6,8 @@ from psycopg2.extensions import connection
 from psycopg2.extras import execute_values
 
 from insight.pypi.datatypes import RecentPackages
+from insight.config import Config
 
-DATABASE_INI_FILE_PATH = os.getenv("DATABASE_INI_FILE_PATH")
-DATABASE_INI_SECTION = "postgresql"
 DEFAULT_DATABASE = "insightpkg"
 MAINTENANCE_DB_NAME = "postgres"
 DB_DIR = Path(__file__).parent.resolve()
@@ -18,40 +15,7 @@ DB_DIR = Path(__file__).parent.resolve()
 logger = logging.getLogger(__name__)
 
 
-def load_config() -> dict:
-    """
-    Load configuration from the database ini file.
-
-    This function reads the configuration from the specified ini file and returns
-    a dictionary containing the parsed configuration parameters.
-
-    Returns:
-        dict: A dictionary containing the loaded configuration parameters.
-
-    Raises:
-        ValueError: If the environment variable 'DATABASE_INI_FILE_PATH' is not set.
-        ValueError: If the DATABASE_INI_SECTION section is not found in the ini file.
-    """
-
-    if not DATABASE_INI_FILE_PATH:
-        raise ValueError("Environment Variable 'DATABASE_INI_FILE_PATH' is not set")
-
-    parser = ConfigParser()
-    parser.read(DATABASE_INI_FILE_PATH)
-
-    config = {}
-    if parser.has_section(DATABASE_INI_SECTION):
-        params = parser.items(DATABASE_INI_SECTION)
-        for param in params:
-            config[param[0]] = param[1]
-    else:
-        raise ValueError(
-            f"Section {DATABASE_INI_SECTION} not found in the {DATABASE_INI_FILE_PATH} file"
-        )
-    return config
-
-
-def get_connection(config: dict) -> connection:
+def get_connection(config: Config) -> connection:
     """
     Establish a connection to the PostgreSQL database.
 
@@ -59,43 +23,49 @@ def get_connection(config: dict) -> connection:
     PostgreSQL database using the provided configuration.
 
     Args:
-        config (dict): A dictionary containing the database connection parameters.
+        config (Config): A config containing the database connection parameters.
 
     Returns:
         connection: A psycopg2 connection object to the database.
     """
 
     conn = connect(
-        dbname=config["database"],
-        user=config["user"],
-        password=config["password"],
-        host=config["host"],
-        port=config["port"],
+        dbname=config.db_database_name,
+        user=config.db_user,
+        password=config.db_password,
+        host=config.db_host,
+        port=config.db_port,
     )
-    logger.debug(f"Connection established to Database {config["database"]!r}")
+    logger.debug(f"Connection established to Database {config.db_database_name!r}")
     return conn
 
 
 # Since PostgreSQL doesn’t support CREATE DATABASE IF NOT EXISTS, We create a default connection to database which is 'postgres'
-def check_maintenance_database() -> connection:
-    config = load_config()
-    config["database"] = MAINTENANCE_DB_NAME
+def check_maintenance_database(config: Config) -> connection:
+    config_maintenance_copy = config.model_copy()
 
-    conn = get_connection(config)
+    config_maintenance_copy.db_database_name = MAINTENANCE_DB_NAME
+
+    conn = get_connection(config_maintenance_copy)
     return conn
 
 
-def create_database() -> None:
+def create_database(config: Config) -> connection:
     """
-    Create the main database if it doesn't exist.
-
     This function checks if the main database exists, and if not, creates it.
     It uses the default 'postgres' database to check for existence and create
     the main database if needed.
+
+    Attributes:
+        config (Config): A config containing the database connection parameters.
+
+    Returns:
+        conn: A psycopg2 connection object to the database.
+
     """
 
     # Connect to the default 'postgres' database
-    default_connection = check_maintenance_database()
+    default_connection = check_maintenance_database(config=config)
     default_connection.autocommit = True
     default_cursor = default_connection.cursor()
 
@@ -111,6 +81,9 @@ def create_database() -> None:
         logger.debug(f"Database {DEFAULT_DATABASE!r} created.")
     else:
         logger.debug(f"Database {DEFAULT_DATABASE!r} already exists.")
+
+    conn = get_connection(config)
+    return conn
 
 
 def create_required_tables(conn: connection) -> None:

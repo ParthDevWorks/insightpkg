@@ -1,0 +1,29 @@
+name: Daily Ingest PyPI Data to Supabase at 5:50 PM CST
+
+on:
+  schedule:
+    - cron: '50 23 * * *'  # 11:50 PM UTC = 5:50 PM CST (UTC-6)
+  workflow_dispatch:      # Allows manual triggering
+
+env:
+    PYTHON_VERSION: ${{ vars.PYTHON_VERSION }}
+    POETRY_VERSION: ${{ vars.POETRY_VERSION }}
+
+jobs:
+  run-daily-task:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Install Python and Poetry
+        uses: ParthDevWorks/development-actions/actions/install-python-poetry@main
+        with:
+            python-version: ${{ env.PYTHON_VERSION }}
+            poetry-version: ${{ env.POETRY_VERSION }}
+
+      - name: Install project
+        run: poetry install --no-interaction --no-root
+    
+      - name: Run the Ingestion of PyPI to Supabase
+        run: poetry run pypi_ingest --store --mode prod

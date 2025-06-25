@@ -1,0 +1,7 @@
+# Create a `database.ini` file using following structure and section can be 'dev' or 'prod'
+[dev]
+db_host=localhost
+db_database_name=insightpkg
+db_port=PortNumber
+db_user=YourAdminValue
+db_password=YourPassword

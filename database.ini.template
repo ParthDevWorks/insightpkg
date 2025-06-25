@@ -1,7 +1,0 @@
-# Create a `database.ini` file using following structure
-[postgresql]
-host=localhost
-database=insightpkg
-port=PortNumber
-user=YourAdminValue
-password=YourPassword

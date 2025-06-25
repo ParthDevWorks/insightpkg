@@ -17,16 +17,26 @@ def main():
     )
 
     parser.add_argument(
+        "-m",
+        "--mode",
+        type=str,
+        default="dev",
+        choices=["dev", "prod"],
+        help="Which Mode you want to Run Project on",
+    )
+
+    parser.add_argument(
         "--disable-logs", action="store_true", help="Disable Logging to File"
     )
 
     args = parser.parse_args()
+    mode = args.mode
 
     if args.disable_logs:
         disable_logs()
 
     if args.store:
-        execute()
+        execute(mode=mode)
 
 
 if __name__ == "__main__":
