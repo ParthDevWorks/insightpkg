@@ -25,15 +25,8 @@ def main():
         help="Which Mode you want to Run Project on",
     )
 
-    parser.add_argument(
-        "--disable-logs", action="store_true", help="Disable Logging to File"
-    )
-
     args = parser.parse_args()
     mode = args.mode
-
-    if args.disable_logs:
-        disable_logs()
 
     if args.store:
         execute(mode=mode)
