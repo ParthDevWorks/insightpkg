@@ -5,6 +5,7 @@ from typing import Literal
 from insight.config import load_config, PACKAGE_VERSION
 from insight.pypi.utils import get_pypi_packages_uploaded_today
 from insight.db.main import DatabaseEntries
+from insight.db.utils import insert_into_pypi_packages_table
 from insight.decorator.main import timing_decorator
 
 logger = logging.getLogger(__name__)
@@ -24,8 +25,11 @@ def ingest_pypi(mode: Literal["dev", "prod"]) -> bool:
         config = load_config(section=mode)
         data = get_pypi_packages_uploaded_today()
 
-        db = DatabaseEntries(config=config, data=data)
-        db.insert_data()
+        db = DatabaseEntries(config=config)
+        conn = db.get_connection_object
+
+        insert_into_pypi_packages_table(conn=conn, data=data)
+
         db.shutdown()
 
         pypi_ingest_status = True

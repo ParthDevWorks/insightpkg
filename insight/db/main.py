@@ -22,19 +22,19 @@ class DatabaseEntries:
     it's ready for use, inserting data, and shutting down connections when done.
 
     Attributes:
-        mode (Literal["dev", "prod"]): The database mode.
-        data (list[RecentPackages]): The list of RecentPackages objects to be inserted.
+        config (Config): The Config object.
 
     Usage:
-        db = DatabaseEntries(mode="dev", data=recent_packages_list)
-        db.insert_data()  # Inserts the data into the database
+        db = DatabaseEntries(config=config)
+        conn = db.get_connection_object()
+        func_name_which_inserts_data(conn, data)  # Inserts the data into the database
         db.shutdown()     # Closes the database connection
 
     Note:
         This class should be instantiated only once per session, typically in the main script.
     """
 
-    def __init__(self, config: Config, data: list[RecentPackages]):
+    def __init__(self, config: Config):
         self.config = config
 
         if self.config.mode == "dev":
@@ -43,8 +43,6 @@ class DatabaseEntries:
             self.conn = self._load_prod_database()
 
         self._ensure_tables_are_present()
-
-        self.data = data
 
     def _load_dev_database(self) -> connection:
         """
@@ -68,6 +66,10 @@ class DatabaseEntries:
         conn = psycopg2.connect(connection_string)
         return conn
 
+    @property
+    def get_connection_object(self):
+        return self.conn
+
     def _ensure_tables_are_present(self):
         """
         Ensure the tables are set up.
@@ -75,11 +77,6 @@ class DatabaseEntries:
         This method calls functions to create the required tables in the database.
         """
         create_required_tables(self.conn)
-
-    def insert_data(self):
-        """Insert the stored data into the database."""
-
-        insert_into_pypi_packages_table(self.conn, self.data)
 
     def shutdown(self):
         """
