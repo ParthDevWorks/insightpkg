@@ -9,6 +9,7 @@ class MonthlyRotatingFileHandler(logging.Handler):
     def __init__(self, log_dir: Path):
         super().__init__()
         self.log_dir = log_dir
+        self.log_dir.mkdir(parents=True, exist_ok=True)
 
         self.log_file_name = LOG_FILE_NAME
 
