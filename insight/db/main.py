@@ -1,15 +1,14 @@
 import logging
-from typing import Literal
 import psycopg2
 from psycopg2.extensions import connection
 
 from insight.db.utils import (
-    load_config,
     create_database,
     create_required_tables,
     insert_into_pypi_packages_table,
 )
 
+from insight.config import Config
 from insight.pypi.datatypes import RecentPackages
 
 logger = logging.getLogger(__name__)
@@ -35,12 +34,12 @@ class DatabaseEntries:
         This class should be instantiated only once per session, typically in the main script.
     """
 
-    def __init__(self, mode: Literal["dev", "prod"], data: list[RecentPackages]):
-        self.config = load_config(section=mode)
+    def __init__(self, config: Config, data: list[RecentPackages]):
+        self.config = config
 
-        if mode == "dev":
+        if self.config.mode == "dev":
             self.conn = self._load_dev_database()
-        elif mode == "prod":
+        elif self.config.mode == "prod":
             self.conn = self._load_prod_database()
 
         self._ensure_tables_are_present()
@@ -65,7 +64,7 @@ class DatabaseEntries:
         Returns:
             conn: A psycopg2 connection object to the prod database.
         """
-        connection_string = f"postgresql://{self.config["user"]}:{self.config["password"]}@{self.config["host"]}:{self.config["port"]}/{self.config["database"]}"
+        connection_string = f"postgresql://{self.config.db_user}:{self.config.db_password}@{self.config.db_host}:{self.config.db_port}/{self.config.db_database_name}"
         conn = psycopg2.connect(connection_string)
         return conn
 

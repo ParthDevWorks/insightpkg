@@ -194,4 +194,4 @@ cython_debug/
 .cursorindexingignore
 
 # Project Related
-database.ini
+config.ini
