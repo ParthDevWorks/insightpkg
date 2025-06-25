@@ -2,6 +2,7 @@ import os
 from configparser import ConfigParser
 from pathlib import Path
 import logging
+from typing import Literal
 
 from psycopg2 import connect, sql
 from psycopg2.extensions import connection
@@ -10,7 +11,6 @@ from psycopg2.extras import execute_values
 from insight.pypi.datatypes import RecentPackages
 
 DATABASE_INI_FILE_PATH = os.getenv("DATABASE_INI_FILE_PATH")
-DATABASE_INI_SECTION = "postgresql"
 DEFAULT_DATABASE = "insightpkg"
 MAINTENANCE_DB_NAME = "postgres"
 DB_DIR = Path(__file__).parent.resolve()
@@ -18,13 +18,15 @@ DB_DIR = Path(__file__).parent.resolve()
 logger = logging.getLogger(__name__)
 
 
-def load_config() -> dict:
+def load_config(section: Literal["dev", "prod"]) -> dict:
     """
     Load configuration from the database ini file.
 
     This function reads the configuration from the specified ini file and returns
     a dictionary containing the parsed configuration parameters.
 
+    Attributes:
+        section (Literal[dev, prod]): The Section which defines what database needs to be loaded.
     Returns:
         dict: A dictionary containing the loaded configuration parameters.
 
@@ -40,13 +42,13 @@ def load_config() -> dict:
     parser.read(DATABASE_INI_FILE_PATH)
 
     config = {}
-    if parser.has_section(DATABASE_INI_SECTION):
-        params = parser.items(DATABASE_INI_SECTION)
+    if parser.has_section(section):
+        params = parser.items(section)
         for param in params:
             config[param[0]] = param[1]
     else:
         raise ValueError(
-            f"Section {DATABASE_INI_SECTION} not found in the {DATABASE_INI_FILE_PATH} file"
+            f"Section {section!r} not found in the {DATABASE_INI_FILE_PATH} file"
         )
     return config
 
@@ -77,25 +79,31 @@ def get_connection(config: dict) -> connection:
 
 
 # Since PostgreSQL doesn’t support CREATE DATABASE IF NOT EXISTS, We create a default connection to database which is 'postgres'
-def check_maintenance_database() -> connection:
-    config = load_config()
-    config["database"] = MAINTENANCE_DB_NAME
+def check_maintenance_database(config: dict) -> connection:
+    config_maintenance_copy = config.copy()
 
-    conn = get_connection(config)
+    config_maintenance_copy["database"] = MAINTENANCE_DB_NAME
+
+    conn = get_connection(config_maintenance_copy)
     return conn
 
 
-def create_database() -> None:
+def create_database(config: dict) -> connection:
     """
-    Create the main database if it doesn't exist.
-
     This function checks if the main database exists, and if not, creates it.
     It uses the default 'postgres' database to check for existence and create
     the main database if needed.
+
+    Attributes:
+        config (dict): A dictionary containing the database connection parameters.
+
+    Returns:
+        conn: A psycopg2 connection object to the database.
+
     """
 
     # Connect to the default 'postgres' database
-    default_connection = check_maintenance_database()
+    default_connection = check_maintenance_database(config=config)
     default_connection.autocommit = True
     default_cursor = default_connection.cursor()
 
@@ -111,6 +119,9 @@ def create_database() -> None:
         logger.debug(f"Database {DEFAULT_DATABASE!r} created.")
     else:
         logger.debug(f"Database {DEFAULT_DATABASE!r} already exists.")
+
+    conn = get_connection(config)
+    return conn
 
 
 def create_required_tables(conn: connection) -> None:
