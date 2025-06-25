@@ -3,9 +3,7 @@ import logging
 
 from psycopg2 import connect, sql
 from psycopg2.extensions import connection
-from psycopg2.extras import execute_values
 
-from insight.pypi.datatypes import RecentPackages
 from insight.config import Config
 
 DEFAULT_DATABASE = "insightpkg"
@@ -110,53 +108,3 @@ def create_required_tables(conn: connection) -> None:
 
     except FileNotFoundError:
         logger.critical(f"Schema File not found at location: {schema_file_path!r}")
-
-
-def insert_into_pypi_packages_table(
-    conn: connection, data: list[RecentPackages]
-) -> None:
-    """
-    Insert package information into the `pypi_packages` table.
-
-    This function inserts multiple rows of package information into the
-    pypi_packages table using execute_values for better performance.
-
-    Args:
-        conn (connection): The database connection object.
-        data (list[RecentPackages]): A list of RecentPackages objects containing
-            the package information to be inserted.
-
-    """
-    if not data:
-        logger.info("No Data to Insert in table")
-        return
-
-    values = [
-        (
-            p.package_name,
-            p.package_version,
-            p.package_upload_date,
-            p.package_upload_time,
-            p.package_github_link,
-            p.package_description,
-        )
-        for p in data
-    ]
-
-    query = """
-        INSERT INTO pypi_packages (
-            package_name,
-            package_version,
-            package_upload_date,
-            package_upload_time,
-            package_github_link,
-            package_description
-        ) VALUES %s
-        ON CONFLICT (package_name, package_version) DO NOTHING
-    """
-
-    with conn.cursor() as cur:
-        execute_values(cur, query, values)
-    conn.commit()
-
-    logger.debug("Data has been inserted into 'pypi_packages' table.")

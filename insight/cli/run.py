@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 import sys
 
-from insight.main import ingest_pypi
+from insight.main import ingest_pypi, post_to_reddit
 
 
 def main():
@@ -14,6 +14,13 @@ def main():
         "--store",
         action="store_true",
         help="Scrapes the PyPI website and extracts the packages which were uploaded today and then enters into DB. Make sure PostgreSQL DB Server is Running.",
+    )
+
+    parser.add_argument(
+        "-p",
+        "--post",
+        action="store_true",
+        help="Posts Weekly New Packages to a Reddit Page",
     )
 
     parser.add_argument(
@@ -30,8 +37,11 @@ def main():
 
     if args.store:
         status = ingest_pypi(mode=mode)
-        if not status:
-            sys.exit(1)
+    elif args.post:
+        status = post_to_reddit(mode=mode)
+
+    if not status:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
