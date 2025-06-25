@@ -23,7 +23,7 @@ jobs:
             poetry-version: ${{ env.POETRY_VERSION }}
 
       - name: Install project
-        run: poetry install --no-interaction --no-root
+        run: poetry install --no-interaction
     
       - name: Run the Ingestion of PyPI to Supabase
         run: poetry run pypi_ingest --store --mode prod
