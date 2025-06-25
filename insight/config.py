@@ -1,10 +1,15 @@
 import os
 from configparser import ConfigParser
 from typing import Literal
+from pathlib import Path
+from importlib.metadata import version
 
 from pydantic import BaseModel
 
+PACKAGE_NAME = "insight"
+PACKAGE_VERSION = version(PACKAGE_NAME)
 CONFIG_INI_FILE_PATH = os.getenv("CONFIG_INI_FILE_PATH")
+LOG_DIR = Path(os.getenv("LOG_DIR", Path(__file__).parent.parent.resolve()))
 
 
 class Config(BaseModel):

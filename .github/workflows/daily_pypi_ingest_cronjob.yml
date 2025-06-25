@@ -9,6 +9,7 @@ env:
     PYTHON_VERSION: ${{ vars.PYTHON_VERSION }}
     POETRY_VERSION: ${{ vars.POETRY_VERSION }}
     CONFIG_INI_FILE_PATH: ${{ github.workspace }}/config.ini
+    LOG_DIR: ${{ github.workspace }}/logs
 
 jobs:
   run-daily-task:
@@ -39,3 +40,12 @@ jobs:
 
       - name: Run the Ingestion of PyPI to Supabase
         run: poetry run pypi_ingest --store --mode prod
+      
+      - name: Get date
+        id: date
+        run: echo "name=build-logs-$(date +'%d-%M-%Y')" >> $GITHUB_OUTPUT
+      - name: Upload Logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.date.outputs.name }}
+          path: ${{ env.LOG_DIR }}
