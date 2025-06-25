@@ -13,7 +13,7 @@ class MonthlyRotatingFileHandler(logging.Handler):
         self.log_file_name = LOG_FILE_NAME
 
         self.stream = open(
-            self.log_dir / self.log_file_name, mode="a", encoding="utf-8"
+            self.log_dir / self.log_file_name, mode="x", encoding="utf-8"
         )
 
     def emit(self, record):
