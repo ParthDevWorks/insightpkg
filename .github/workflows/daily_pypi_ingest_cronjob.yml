@@ -28,7 +28,7 @@ jobs:
       
       - name: Create config.ini File
         run: |
-          cat <<EOF > "$CONFIG"
+          cat <<EOF > "$CONFIG_INI_FILE_PATH"
           [prod]
           db_host=${{ secrets.SUPABASE_DB_HOST }}
           db_database_name=${{ secrets.SUPABASE_DB_NAME }}
