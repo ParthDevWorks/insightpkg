@@ -1,6 +1,5 @@
 from argparse import ArgumentParser
 
-from insight import disable_logs
 from insight.fetch_and_store_pypi import execute
 
 

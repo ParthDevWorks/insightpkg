@@ -13,8 +13,8 @@ def execute(mode: Literal["dev", "prod"]):
     logger.info("=" * 60)
     logger.info(f"🚀 Run started at {datetime.now():%Y-%m-%d %H:%M:%S}")
     logger.info(f"Package Running in {mode!r} Mode")
-    logger.info("=" * 60)
     logger.info(f"Package Version:- {PACKAGE_VERSION!r}")
+    logger.info("=" * 60)
 
     config = load_config(section=mode)
     data = get_pypi_packages_uploaded_today()
