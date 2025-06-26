@@ -1,0 +1,29 @@
+name: Create Cache for Python and Poetry Environment
+description: This workflow runs on the dev branch and stores cache so child jobs can access caches
+
+on:
+    workflow_dispatch:
+        branches:
+            - dev
+
+env:
+  POETRY_VERSION: ${{ vars.POETRY_VERSION}}
+
+jobs:
+  test:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+
+    strategy:
+        matrix:
+          python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Cache Development Actions
+        uses: ParthDevWorks/development-actions/actions/check-cache@main
+        with:
+            python-version: ${{ matrix.python-version }}
+            poetry-version: ${{ env.POETRY_VERSION }}
