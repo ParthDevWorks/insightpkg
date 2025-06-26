@@ -105,7 +105,7 @@ def get_github_link(package_name: str, package_version: str) -> str | None:
     """
 
     url = f"https://pypi.org/pypi/{package_name}/{package_version}/json"
-    response = requests.get(url)
+    response = get_request(url)
 
     response_dict = response.json()
     package_info = response_dict["info"]
