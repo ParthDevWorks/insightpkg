@@ -12,12 +12,13 @@ RSS_FEED_URL = "https://pypi.org/rss/updates.xml"
 logger = logging.getLogger(__name__)
 
 
-def get_request(url: str) -> requests.Response | None:
+def get_request(url: str, auth: tuple | None = None) -> requests.Response | None:
     """
     Sends a GET request to the specified URL and returns the response if successful.
 
     Args:
         url (str): The URL to send the request to.
+        auth (tuple | None): Auth token to Authenticate User.
 
     Returns:
         requests.Response | None: The response object if the request was successful, otherwise None.
@@ -26,7 +27,7 @@ def get_request(url: str) -> requests.Response | None:
         Exception: If the request fails and the status code is not 200.
     """
 
-    response = requests.get(url)
+    response = requests.get(url, auth=auth)
     if response.status_code == 200:
         logger.debug(f"GET request to {url!r} completed successfully.")
         return response
@@ -104,7 +105,7 @@ def get_github_link(package_name: str, package_version: str) -> str | None:
     """
 
     url = f"https://pypi.org/pypi/{package_name}/{package_version}/json"
-    response = requests.get(url)
+    response = get_request(url)
 
     response_dict = response.json()
     package_info = response_dict["info"]

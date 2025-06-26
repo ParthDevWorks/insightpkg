@@ -10,7 +10,7 @@ def test_get_pypi_packages_uploaded_today(monkeypatch, data_root, mock_response)
         xml_string = f.read()
     xml_content = xml_string.encode("utf-8")
 
-    def mock_rss(url):
+    def mock_rss(url, auth):
         return mock_response(xml_content)
 
     def mock_github_link(name, version):
@@ -79,7 +79,7 @@ def test_get_github_link(
         def json(self):
             return mock_response
 
-    def mock_get_request(url):
+    def mock_get_request(url, auth):
         return MockResponse()
 
     monkeypatch.setattr(

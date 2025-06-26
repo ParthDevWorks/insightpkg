@@ -1,10 +1,13 @@
 from datetime import datetime
+import re
 
+from insight.config import REQUEST_TOKEN
 from insight.pypi.utils import get_request
+from insight.pypi.datatypes import RecentPackages
 from insight.github.datatypes import GithubInfo
 
 
-def get_repo_info(repo_url: str) -> GithubInfo:
+def _get_repo_info(repo_url: str) -> GithubInfo:
     """
     Fetches and returns information about a GitHub repository.
 
@@ -18,15 +21,16 @@ def get_repo_info(repo_url: str) -> GithubInfo:
         ValueError: If the provided URL is invalid.
     """
 
-    parts = repo_url.rstrip("/").split("/")
-    if len(parts) < 2:
-        raise ValueError("Invalid GitHub URL")
-    owner, repo = parts[-2], parts[-1]
+    match = re.match(r"https?://github\.com/([^/]+)/([^/]+)", repo_url)
+
+    owner, repo = match.group(1), match.group(2)
+    if owner is None or repo is None:
+        raise ValueError(f"Owner :{owner} is Repo:{repo} is not correct")
 
     # GitHub API endpoint
     api_url = f"https://api.github.com/repos/{owner}/{repo}"
 
-    response = get_request(api_url)
+    response = get_request(api_url, auth=("username", REQUEST_TOKEN))
 
     data = response.json()
 
@@ -46,3 +50,28 @@ def get_repo_info(repo_url: str) -> GithubInfo:
         last_updated_date=last_updated_date,
         license=data.get("license").get("name", None) if data.get("license") else None,
     )
+
+
+def github_repos_metadata(packages: list[RecentPackages]) -> list[GithubInfo]:
+    """
+    Retrieves GitHub Repo Metadata Info for PyPI packages.
+
+    Args:
+        packages (list[RecentPackages]): A list of RecentPackages dataclass.
+
+    Returns:
+        list[GithubInfo]: A list of GithubInfo objects containing GitHub repository information.
+
+    """
+
+    output = set()
+
+    for item in packages:
+        if item.package_github_link:
+            try:
+                repo_info = _get_repo_info(repo_url=item.package_github_link)
+                output.add(repo_info)
+            except Exception:
+                pass
+
+    return list(output)
