@@ -3,7 +3,7 @@ name: Daily Ingest PyPI Data to Supabase
 on:
   workflow_dispatch:      # Allows manual triggering
   schedule:
-    - cron: "21 4 * * *"  # 11:50 PM UTC = 5:50 PM CST (UTC-6)
+    - cron: "50 23 * * *"  # 11:50 PM UTC = 5:50 PM CST (UTC-6)
   
 
 env:
