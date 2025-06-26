@@ -11,6 +11,8 @@ PACKAGE_NAME = "insight"
 PACKAGE_VERSION = version(PACKAGE_NAME)
 CONFIG_INI_FILE_PATH = os.getenv("CONFIG_INI_FILE_PATH")
 LOG_DIR = Path(os.getenv("LOG_DIR", Path(__file__).parent.parent.resolve()))
+REQUEST_TOKEN = os.getenv("REQUEST_TOKEN")
+
 
 logger = logging.getLogger(__name__)
 
