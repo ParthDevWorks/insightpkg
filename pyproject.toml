@@ -16,7 +16,7 @@ repository = "https://github.com/ParthDevWorks/insightpkg"
 packages = [{include = "insight"}]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<=3.13"
+python = ">=3.10,<3.14"
 requests = "^2.32.4"
 psycopg2-binary = "^2.9.10"
 pydantic = "^2.11.7"

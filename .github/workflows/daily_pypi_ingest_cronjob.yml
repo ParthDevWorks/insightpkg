@@ -25,8 +25,16 @@ jobs:
             python-version: ${{ env.PYTHON_VERSION }}
             poetry-version: ${{ env.POETRY_VERSION }}
 
-      - name: Install project
-        run: poetry install --no-interaction
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.POETRY_VERSION }}
+          key: poetry-deps-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ env.POETRY_VERSION }}-${{ hashFiles('**/poetry.lock') }}
+    
+      - name: Install Dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction 
       
       - name: Create config.ini File
         run: |

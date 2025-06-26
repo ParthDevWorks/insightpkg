@@ -32,7 +32,15 @@ jobs:
             python-version: ${{ matrix.python-version }}
             poetry-version: ${{ env.POETRY_VERSION }}
 
-      - name: Install project
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.POETRY_VERSION }}
+          key: poetry-deps-${{ runner.os }}-${{ matrix.python-version }}-${{ env.POETRY_VERSION }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install Dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --with dev
 
       - name: Run tests
