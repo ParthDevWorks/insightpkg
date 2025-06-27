@@ -6,7 +6,7 @@ from psycopg2.extensions import connection
 from psycopg2.extras import execute_values
 
 from insight.pypi.datatypes import RecentPackages
-from insight.github.datatypes import GithubInfo
+from insight.github.datatypes import GithubInfo, GithubReleaseNotes
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +76,36 @@ def insert_into_github_info_table(conn: connection, data: list[GithubInfo]):
             created_date = EXCLUDED.created_date,
             last_updated_date = EXCLUDED.last_updated_date,
             license = EXCLUDED.license;
+        """
+    ).format(table_name=sql.Identifier(table_name))
+
+    bulk_insert(conn, data, query, table_name)
+
+
+def insert_into_github_release_notes_table(
+    conn: connection, data: list[GithubReleaseNotes]
+):
+    """
+    Insert github release information into the `release_notes_info` table.
+
+    This function inserts multiple rows of github metadata information into the
+    release_notes_info table using execute_values for better performance.
+
+    Args:
+        conn (connection): The database connection object.
+        data (list[GithubReleaseNotes]): A list of GithubReleaseNotes objects containing
+            the github release notes information to be inserted.
+    """
+
+    table_name = "release_notes_info"
+
+    query = sql.SQL(
+        """
+        INSERT INTO {table_name} (github_link, release_tag, published_date, release_notes)
+        VALUES %s
+        ON CONFLICT (github_link, release_tag) DO UPDATE SET
+            published_date = EXCLUDED.published_date,
+            release_notes = EXCLUDED.release_notes;
         """
     ).format(table_name=sql.Identifier(table_name))
 
