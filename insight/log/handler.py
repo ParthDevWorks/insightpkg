@@ -5,7 +5,7 @@ from pathlib import Path
 LOG_FILE_NAME = f'{datetime.now().strftime("%d_%B_%Y")}.log'
 
 
-class MonthlyRotatingFileHandler(logging.Handler):
+class FileHandlerLogger(logging.Handler):
     def __init__(self, log_dir: Path):
         super().__init__()
         self.log_dir = log_dir

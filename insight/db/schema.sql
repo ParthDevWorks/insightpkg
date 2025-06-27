@@ -19,3 +19,11 @@ CREATE TABLE if not exists github_info (
     license TEXT,
     PRIMARY KEY (github_link)
 );
+
+CREATE TABLE if not exists release_notes_info (
+    github_link TEXT NOT NULL,
+    release_tag TEXT,
+    published_date DATE NOT NULL,
+    release_notes TEXT,
+    PRIMARY KEY (github_link, release_tag)
+);

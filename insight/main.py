@@ -8,9 +8,14 @@ from insight.db.main import DatabaseEntries
 from insight.db.insert import (
     insert_into_pypi_packages_table,
     insert_into_github_info_table,
+    insert_into_github_release_notes_table,
 )
 from insight.decorator.main import timing_decorator
-from insight.github.utils import github_repos_metadata
+from insight.github.utils import (
+    github_repos_metadata,
+    get_release_notes_info,
+    get_repo_info,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +39,8 @@ def ingest_pypi(mode: Literal["dev", "prod"], dry_run: bool = False) -> bool:
         config = load_config(section=mode)
 
         pypi_data = get_pypi_packages_uploaded_today()
-        github_metadata = github_repos_metadata(pypi_data)
+        github_metadata = github_repos_metadata(pypi_data, get_repo_info)
+        release_notes_info = github_repos_metadata(pypi_data, get_release_notes_info)
 
         if not dry_run:
             db = DatabaseEntries(config=config)
@@ -42,6 +48,7 @@ def ingest_pypi(mode: Literal["dev", "prod"], dry_run: bool = False) -> bool:
 
             insert_into_pypi_packages_table(conn=conn, data=pypi_data)
             insert_into_github_info_table(conn=conn, data=github_metadata)
+            insert_into_github_release_notes_table(conn=conn, data=release_notes_info)
 
             db.shutdown()
 

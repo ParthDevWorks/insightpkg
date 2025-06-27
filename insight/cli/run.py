@@ -11,7 +11,7 @@ def main():
 
     parser.add_argument(
         "-s",
-        "--store",
+        "--pypi-ingestion",
         action="store_true",
         help="Scrapes the PyPI website and extracts the packages which were uploaded today and then enters into DB. Make sure PostgreSQL DB Server is Running.",
     )
@@ -36,7 +36,7 @@ def main():
     mode = args.mode
     dry_run = args.dry_run
 
-    if args.store:
+    if args.pypi_ingestion:
         status = ingest_pypi(mode=mode, dry_run=dry_run)
 
     if not status:
