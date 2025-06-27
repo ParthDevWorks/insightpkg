@@ -25,11 +25,19 @@ def main():
         help="Which Mode you want to Run Project on",
     )
 
+    parser.add_argument(
+        "-d",
+        "--dry-run",
+        action="store_true",
+        help="Runs the program without connecting to Database. No Data is inserted into Database. This is for Development Purpose",
+    )
+
     args = parser.parse_args()
     mode = args.mode
+    dry_run = args.dry_run
 
     if args.store:
-        status = ingest_pypi(mode=mode)
+        status = ingest_pypi(mode=mode, dry_run=dry_run)
 
     if not status:
         sys.exit(1)

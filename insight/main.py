@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 @timing_decorator
-def ingest_pypi(mode: Literal["dev", "prod"]) -> bool:
+def ingest_pypi(mode: Literal["dev", "prod"], dry_run: bool = False) -> bool:
     try:
         pypi_ingest_status = False
 
@@ -24,19 +24,26 @@ def ingest_pypi(mode: Literal["dev", "prod"]) -> bool:
         logger.info(f"🚀 Run started at {datetime.now():%Y-%m-%d %H:%M:%S}")
         logger.info(f"Package Running in {mode!r} Mode")
         logger.info(f"Package Version:- {PACKAGE_VERSION!r}")
+        if dry_run:
+            logger.info(
+                "Package Running in Dry Run Mode. No Database Entries will be made"
+            )
+
         logger.info("=" * 60)
 
         config = load_config(section=mode)
-        db = DatabaseEntries(config=config)
-        conn = db.get_connection_object
 
         pypi_data = get_pypi_packages_uploaded_today()
         github_metadata = github_repos_metadata(pypi_data)
 
-        insert_into_pypi_packages_table(conn=conn, data=pypi_data)
-        insert_into_github_info_table(conn=conn, data=github_metadata)
+        if not dry_run:
+            db = DatabaseEntries(config=config)
+            conn = db.get_connection_object
 
-        db.shutdown()
+            insert_into_pypi_packages_table(conn=conn, data=pypi_data)
+            insert_into_github_info_table(conn=conn, data=github_metadata)
+
+            db.shutdown()
 
         pypi_ingest_status = True
     except Exception:
