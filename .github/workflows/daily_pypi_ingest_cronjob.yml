@@ -3,7 +3,7 @@ name: Daily Ingest PyPI Data to Supabase
 on:
   workflow_dispatch:      # Allows manual triggering
   schedule:
-    - cron: "50 23 * * *"  # 11:50 PM UTC = 6:50 PM CST (UTC-6)
+    - cron: "48 23 * * *"  # 11:48 PM UTC = 6:48 PM CST (UTC-6)
   
 
 env:
@@ -29,7 +29,7 @@ jobs:
         id: cached-poetry-dependencies
         uses: actions/cache@v4
         with:
-          path: ${{ env.POETRY_VERSION }}
+          path: ${{ env.POETRY_VENV_PATH }}
           key: poetry-deps-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ env.POETRY_VERSION }}-${{ hashFiles('**/poetry.lock') }}
     
       - name: Install Dependencies
