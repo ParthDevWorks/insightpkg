@@ -59,32 +59,36 @@ def get_pypi_packages_uploaded_today() -> list[RecentPackages]:
     root = ET.fromstring(response.content)
 
     for item in root.findall(".//item"):
-        title = item.find("title").text
-        description = item.find("description").text
-        xml_date = item.find("pubDate").text
-        package_name, package_version = title.split()
+        try:
+            title = item.find("title").text
+            description = item.find("description").text
+            xml_date = item.find("pubDate").text
+            package_name, package_version = title.split()
 
-        github_link = get_github_link(package_name, package_version)
+            github_link = get_github_link(package_name, package_version)
 
-        parsed_datetime = datetime.strptime(xml_date, "%a, %d %b %Y %H:%M:%S %Z")
+            parsed_datetime = datetime.strptime(xml_date, "%a, %d %b %Y %H:%M:%S %Z")
 
-        # Attach UTC timezone manually
-        parsed_datetime = parsed_datetime.replace(tzinfo=timezone.utc)
+            # Attach UTC timezone manually
+            parsed_datetime = parsed_datetime.replace(tzinfo=timezone.utc)
 
-        # Extract only the date part
-        date = parsed_datetime.date().isoformat()
-        time = parsed_datetime.strftime("%H:%M:%S%z")
+            # Extract only the date part
+            date = parsed_datetime.date().isoformat()
+            time = parsed_datetime.strftime("%H:%M:%S%z")
 
-        data.append(
-            RecentPackages(
-                package_name=package_name,
-                package_version=package_version,
-                package_upload_date=date,
-                package_upload_time=time,
-                package_github_link=github_link,
-                package_description=description,
+            data.append(
+                RecentPackages(
+                    package_name=package_name,
+                    package_version=package_version,
+                    package_upload_date=date,
+                    package_upload_time=time,
+                    package_github_link=github_link,
+                    package_description=description,
+                )
             )
-        )
+
+        except Exception:
+            pass
 
     return data
 
