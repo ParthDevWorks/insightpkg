@@ -79,6 +79,10 @@ def test_get_github_link(
         def json(self):
             return mock_response
 
+        @property
+        def status_code(self):
+            return 200
+
     def mock_get_request(url, auth):
         return MockResponse()
 
