@@ -49,7 +49,7 @@ jobs:
 
       - name: Run the Ingestion of PyPI to Supabase
         id: ingest_pypi
-        run: poetry run insight --store --mode prod
+        run: poetry run insight --pypi-ingestion --mode prod
         continue-on-error: true
       
       - name: Get date
