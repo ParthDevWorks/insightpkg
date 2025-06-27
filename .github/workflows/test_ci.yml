@@ -36,7 +36,7 @@ jobs:
         id: cached-poetry-dependencies
         uses: actions/cache@v4
         with:
-          path: ${{ env.POETRY_VERSION }}
+          path: ${{ env.POETRY_VENV_PATH }}
           key: poetry-deps-${{ runner.os }}-${{ matrix.python-version }}-${{ env.POETRY_VERSION }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install Dependencies
