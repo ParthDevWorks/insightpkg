@@ -32,7 +32,7 @@ def get_request(url: str, auth: tuple | None = None) -> requests.Response | None
         logger.debug(f"GET request to {url!r} completed successfully.")
         return response
     else:
-        logger.critical(
+        logger.error(
             f"GET request to {url!r} failed with response code:{response.status_code!r}."
         )
         raise Exception(

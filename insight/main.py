@@ -12,7 +12,6 @@ from insight.db.insert import (
 )
 from insight.decorator.main import timing_decorator
 from insight.github.utils import (
-    github_repos_metadata,
     get_release_notes_info,
     get_repo_info,
 )
@@ -21,7 +20,9 @@ logger = logging.getLogger(__name__)
 
 
 @timing_decorator
-def ingest_pypi(mode: Literal["dev", "prod"], dry_run: bool = False) -> bool:
+def ingest_pypi(
+    mode: Literal["dev", "prod"], dry_run: bool = False, minimum_stars: int = 10
+) -> bool:
     try:
         pypi_ingest_status = False
 
@@ -39,8 +40,8 @@ def ingest_pypi(mode: Literal["dev", "prod"], dry_run: bool = False) -> bool:
         config = load_config(section=mode)
 
         pypi_data = get_pypi_packages_uploaded_today()
-        github_metadata = github_repos_metadata(pypi_data, get_repo_info)
-        release_notes_info = github_repos_metadata(pypi_data, get_release_notes_info)
+        github_metadata = get_repo_info(pypi_data, minimum_stars=minimum_stars)
+        release_notes_info = get_release_notes_info(github_metadata)
 
         if not dry_run:
             db = DatabaseEntries(config=config)

@@ -3,7 +3,7 @@ name: Daily Ingest PyPI Data to Supabase
 on:
   workflow_dispatch:      # Allows manual triggering
   schedule:
-    - cron: "48 23 * * *"  # 11:48 PM UTC = 6:48 PM CST (UTC-6)
+    - cron: "0 */2 * * *"  # Every 2 hours (e.g 0,2,4,6,8,10,12 hour)
   
 
 env:
@@ -49,7 +49,7 @@ jobs:
 
       - name: Run the Ingestion of PyPI to Supabase
         id: ingest_pypi
-        run: poetry run insight --pypi-ingestion --mode prod
+        run: poetry run insight --pypi-ingestion --mode prod --minimum-stars 30
         continue-on-error: true
       
       - name: Get date
