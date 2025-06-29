@@ -26,4 +26,5 @@ CREATE TABLE if not exists release_notes_info (
     published_date DATE NOT NULL,
     release_notes TEXT,
     PRIMARY KEY (github_link, release_tag)
+    FOREIGN KEY (github_link) REFERENCES github_info(github_link)
 );
