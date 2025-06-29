@@ -54,7 +54,7 @@ def get_repo_info(
         list[GithubInfo]: List of objects containing detailed information about the repository.
 
     """
-    github_info_metadata = []
+    github_info_metadata = set()
     for item in packages:
         try:
             repo_url = item.package_github_link
@@ -95,7 +95,7 @@ def get_repo_info(
                 )
                 continue
 
-            github_info_metadata.append(
+            github_info_metadata.add(
                 GithubInfo(
                     github_link=repo_url,
                     stars=stars,
@@ -114,7 +114,7 @@ def get_repo_info(
         except Exception:
             pass
 
-    return github_info_metadata
+    return list(github_info_metadata)
 
 
 def get_release_notes_info(
@@ -130,7 +130,7 @@ def get_release_notes_info(
         list[GithubReleaseNotes]: A list of objects containing detailed release notes information about the repository.
 
     """
-    release_info = []
+    release_info = set()
     for item in github_metadata:
         try:
             repo_url = item.github_link
@@ -156,7 +156,7 @@ def get_release_notes_info(
             )
             published_date = published_date_iso.strftime("%Y-%m-%d")
 
-            release_info.append(
+            release_info.add(
                 GithubReleaseNotes(
                     github_link=repo_url,
                     github_release_tag=latest_data.get("tag_name", None),
@@ -168,4 +168,4 @@ def get_release_notes_info(
         except Exception:
             pass
 
-    return release_info
+    return list(release_info)
