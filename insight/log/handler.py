@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-LOG_FILE_NAME = f'{datetime.now().strftime("%d_%B_%Y_%H:%M:%S")}.log'
+LOG_FILE_NAME = f'{datetime.now().strftime("%d_%B_%Y_%H_%M_%S")}.log'
 
 
 class FileHandlerLogger(logging.Handler):

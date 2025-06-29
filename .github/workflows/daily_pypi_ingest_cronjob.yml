@@ -54,7 +54,7 @@ jobs:
       
       - name: Get date
         id: date
-        run: echo "name=build-logs-$(date +'%d-%M-%Y')" >> $GITHUB_OUTPUT
+        run: echo "name=build-logs-$(date +'%d-%m-%Y-%H-%M-%S')" >> $GITHUB_OUTPUT
       - name: Upload Logs
         uses: actions/upload-artifact@v4
         with:
