@@ -2,8 +2,8 @@ name: Daily Ingest PyPI Data to Supabase
 
 on:
   workflow_dispatch:      # Allows manual triggering
-  schedule:
-    - cron: "0 */2 * * *"  # Every 2 hours (e.g 0,2,4,6,8,10,12 hour)
+  # schedule:
+  #   - cron: "0 */2 * * *"  # Every 2 hours (e.g 0,2,4,6,8,10,12 hour)
   
 
 env:
